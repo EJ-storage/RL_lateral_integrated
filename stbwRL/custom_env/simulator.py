@@ -286,8 +286,7 @@ class CustomEnv(gym.Env):
             self.vehicle.set_front_steering_state(self.applied_steer, self.applied_steer_dot)
 
     def _speed_dependent_steering_scale(self, vx: float) -> float: # 속도 기반 조향 스케일
-        if not bool(self.config.enable_speed_dependent_steering_scaling):
-            return 1.0
+
         threshold = float(self.config.speed_dependent_steering_threshold_mps)
         vx_abs = abs(float(vx))
         if threshold <= 0.0 or vx_abs < threshold:

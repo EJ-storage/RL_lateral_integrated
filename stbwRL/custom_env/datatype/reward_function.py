@@ -10,13 +10,16 @@ def calculate_current_curvature(current_state: Dict[str, float], wheelbase: floa
     ax = float(current_state["ax"])
     ay = float(current_state["ay"])
     steer = float(current_state["steer"])
+    yaw_rate = float(current_state["yaw_rate"])
 
     speed = math.hypot(vx, vy)
     denominator = (vx * vx + vy * vy) ** 1.5
 
     if speed < 1.0 or denominator < eps: # 분모가 0에 가까운 경우 자전거 모델 곡률 수식 사용
         return float(math.tan(steer) / wheelbase)
-    return float((vx * ay - vy * ax) / denominator)
+    # ax/ay are body-frame velocity derivatives. Path curvature is yaw-rate
+    # curvature plus the velocity-vector sideslip-rate contribution.
+    return float((yaw_rate / speed) + (vx * ay - vy * ax) / denominator)
 
 
 def calculate_sideslip(current_state: Dict[str, float], eps: float) -> float: # 차량 상태로 부터 sidelip 계산
@@ -28,28 +31,24 @@ def calculate_sideslip(current_state: Dict[str, float], eps: float) -> float: # 
     return float(vy / denominator)
 
 
+def lateral_accel_limit_for_road_friction(config, road_friction: float, fallback: float) -> float:
+    table = tuple(getattr(config, "curvature_error_lateral_accel_term_by_mu", ()))
+    road_friction = float(road_friction)
+    fallback = float(fallback)
+    if not math.isfinite(road_friction) or not table:
+        return fallback
+
+    limits_by_mu = {float(mu): float(limit) for mu, limit in table}
+    return limits_by_mu.get(road_friction, fallback)
+
+
 def curvature_error_lateral_accel_limit_mps2(scenario, config) -> float:
     road_friction = float(getattr(scenario, "road_friction", float("nan")))
-    table = tuple(getattr(config, "curvature_error_lateral_accel_term_by_mu", ()))
-    if not math.isfinite(road_friction) or not table:
-        return float(config.curvature_error_lateral_accel_term_mps2)
-
-    points = sorted((float(mu), float(limit)) for mu, limit in table)
-    for mu, limit in points:
-        if math.isclose(road_friction, mu, rel_tol=0.0, abs_tol=1e-9):
-            return float(limit)
-
-    if road_friction <= points[0][0]:
-        return float(points[0][1])
-    if road_friction >= points[-1][0]:
-        return float(points[-1][1])
-
-    for (mu_low, limit_low), (mu_high, limit_high) in zip(points, points[1:]):
-        if mu_low <= road_friction <= mu_high:
-            ratio = (road_friction - mu_low) / (mu_high - mu_low)
-            return float(limit_low + ratio * (limit_high - limit_low))
-
-    return float(config.curvature_error_lateral_accel_term_mps2)
+    return lateral_accel_limit_for_road_friction(
+        config,
+        road_friction,
+        fallback=float(config.curvature_error_lateral_accel_term_mps2),
+    )
 
 
 def _require_finite_inputs(named_values: Dict[str, float]) -> None:
@@ -77,6 +76,7 @@ def calculate_reward( # 보상 계산
     ax = float(current_state["ax"])
     ay = float(current_state["ay"])
     steer = float(current_state["steer"])
+    yaw_rate = float(current_state["yaw_rate"])
 
     if reference is None: # reference가 없으면 에러 발생
         raise ValueError(
@@ -94,6 +94,7 @@ def calculate_reward( # 보상 계산
             "ax": ax,
             "ay": ay,
             "steer": steer,
+            "yaw_rate": yaw_rate,
             "target_curvature": target_curvature,
             "action": action_value,
         }

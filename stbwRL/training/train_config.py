@@ -67,9 +67,9 @@ class TrainConfig:
     resume_model: Optional[str] = None
     resume_replay_buffer: Optional[str] = None
     resume_curriculum_state: Optional[str] = None
-    resume_model: Optional[str] = "runs/sac_lateral_20260715_152708/final_model.zip"
-    resume_replay_buffer: Optional[str] = "runs/sac_lateral_20260715_152708/final_replay_buffer.pkl"
-    resume_curriculum_state: Optional[str] = "runs/sac_lateral_20260715_152708/curriculum_state.json"
+    # resume_model: Optional[str] = "runs/sac_lateral_20260715_152708/final_model.zip"
+    # resume_replay_buffer: Optional[str] = "runs/sac_lateral_20260715_152708/final_replay_buffer.pkl"
+    # resume_curriculum_state: Optional[str] = "runs/sac_lateral_20260715_152708/curriculum_state.json"
 
 
 ENV_CONFIG = EnvConfig()

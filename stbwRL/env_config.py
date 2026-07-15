@@ -87,7 +87,7 @@ class EnvironmentConfig:
     P_terminal: float = 1.1
     beta_warn: float = math.pi / 16.0
     beta_term: float = math.pi / 3.0
-    curvature_error_lateral_accel_term_mps2: float = 3.0
+    curvature_error_lateral_accel_term_mps2: float = 9.0
     curvature_error_lateral_accel_term_by_mu: Tuple[Tuple[float, float], ...] = (
         (0.3, 3.0),
         (0.6, 6.0),

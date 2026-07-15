@@ -4,30 +4,7 @@ import math
 
 import numpy as np
 
-
-def _lateral_accel_limit_for_road_friction(config, road_friction: float) -> float:
-    table = tuple(getattr(config, "curvature_error_lateral_accel_term_by_mu", ()))
-    fallback = float(getattr(config, "ay_max_for_target_curvature", 6.0))
-    if not table:
-        return fallback
-
-    points = sorted((float(mu), float(limit)) for mu, limit in table)
-    road_friction = float(road_friction)
-    for mu, limit in points:
-        if math.isclose(road_friction, mu, rel_tol=0.0, abs_tol=1e-9):
-            return float(limit)
-
-    if road_friction <= points[0][0]:
-        return float(points[0][1])
-    if road_friction >= points[-1][0]:
-        return float(points[-1][1])
-
-    for (mu_low, limit_low), (mu_high, limit_high) in zip(points, points[1:]):
-        if mu_low <= road_friction <= mu_high:
-            ratio = (road_friction - mu_low) / (mu_high - mu_low)
-            return float(limit_low + ratio * (limit_high - limit_low))
-
-    return fallback
+from .reward_function import lateral_accel_limit_for_road_friction
 
 
 @dataclass
@@ -129,7 +106,11 @@ class Scenario: # 학습 에피소드에서 사용할 전체 시나리오 조건
             steering_offset=steering_offset,
             wheelbase=float(config.wheelbase),
             steering_ratio=float(config.steering_ratio),
-            ay_max_for_target_curvature=_lateral_accel_limit_for_road_friction(config, road_friction),
+            ay_max_for_target_curvature=lateral_accel_limit_for_road_friction(
+                config,
+                road_friction,
+                fallback=float(getattr(config, "ay_max_for_target_curvature", 6.0)),
+            ),
             low_speed_no_saturation_threshold_mps=float(config.low_speed_no_saturation_threshold_mps),
             weave_delay=float(config.weave_delay),
             target_reference_delay_s=float(config.target_reference_delay_s),
