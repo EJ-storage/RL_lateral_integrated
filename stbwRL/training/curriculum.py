@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 from stbwRL.env_config import EnvironmentConfig
-from sbwRL.training.train_config import PROJECT_ROOT, EnvConfig, TrainConfig
+from stbwRL.training.train_config import PROJECT_ROOT, EnvConfig, TrainConfig
 
 try:
     from stable_baselines3.common.callbacks import BaseCallback
