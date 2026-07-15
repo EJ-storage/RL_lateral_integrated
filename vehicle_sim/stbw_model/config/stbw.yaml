@@ -1,0 +1,107 @@
+vehicle_spec:
+  wheel:
+    R_eff: 0.3 # 0.32076
+    J_wheel_front: 2.5
+    J_wheel_rear: 2.5
+    B_wheel_front: 0.4
+    B_wheel_rear: 0.4
+  geometry:
+    lf: 1.169
+    lr: 1.801
+    L_track: 1.634
+    L_wheelbase: 2.97
+    axle_offsets:
+      F:
+        x: 1.169
+        y: 0.0
+      R:
+        x: -1.801
+        y: 0.0
+    corner_offsets:
+      FL:
+        x: 1.169
+        y: 0.817
+      FR:
+        x: 1.169
+        y: -0.817
+      RL:
+        x: -1.801
+        y: 0.817
+      RR:
+        x: -1.801
+        y: -0.817
+
+vehicle_body:
+  m: 2065.03
+  h_CG: 0.654
+  inertia:
+    Izz: 3637.526
+
+
+physics:
+  g: 9.81
+
+brake:
+  tau: 0.1
+  mu_pad: 0.35
+  V_d: 1.0e-7
+  R_rotor: 0.12
+  A_eff: 0.0012566
+  p_max_bar: 200
+
+drive:
+  max_wheel_speed: 204.33
+
+speed_pi:
+  kp: 0.8
+  ki: 0.25
+  min_target_accel_mps2: -6.0
+  max_target_accel_mps2: 4.0
+  integrator_limit_mps: 8.0
+  speed_deadband_mps: 0.02
+
+tire:
+  model: modified_dugoff
+  mu: 1.0
+  modified_dugoff:
+    Re_FL: 0.32076
+    Re_FR: 0.32076
+    Re_RL: 0.32076
+    Re_RR: 0.32076
+    Ckappa_FL: 70000.0
+    Ckappa_FR: 70000.0
+    Ckappa_RL: 85000.0
+    Ckappa_RR: 85000.0
+    Calpha_FL: 80000.0
+    Calpha_FR: 80000.0
+    Calpha_RL: 80000.0
+    Calpha_RR: 80000.0
+    muX_FL: 1.0
+    muX_FR: 1.0
+    muX_RL: 1.0
+    muX_RR: 1.0
+    muY_FL: 1.0
+    muY_FR: 1.0
+    muY_RL: 1.0
+    muY_RR: 1.0
+    Veps: 0.5
+    FzMin: 50.0
+    kappaMin: -0.99
+    kappaMax: 3.0
+    alphaMax: 1.2
+  longitudinal:
+    C_x: 0.0
+    v_min: 0.0
+  lateral:
+    C_alpha: 0.0
+    trail: 0.0
+
+steering:
+  J_cq: 0.0
+  B_cq: 0.0
+  gear_ratio: 118.0 # 사용 안함
+  steering_ratio: 17.21
+  max_rate: 1.05
+  front:
+    max_angle_pos: 0.52
+    max_angle_neg: -0.52

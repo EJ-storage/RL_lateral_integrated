@@ -1,0 +1,101 @@
+# stbw 현대차 과제 파라미터 정의
+# Standard Vehicle Configuration
+# Central parameter file for the vehicle dynamics model.
+
+# ========================================
+# Vehicle Specification
+# ========================================
+vehicle_spec:
+  # Wheel and tire geometry shared by drive/tire modules.
+  wheel:
+    R_eff: 0.321  # Effective tire radius [m]
+
+    # Wheel rotational inertia and viscous drag by axle.
+    # Front: wheel + brake disc + motor/driveline equivalent inertia.
+    # Rear: wheel + brake disc.
+    J_wheel_front: 3.562  # Front wheel inertia [kg*m^2]
+    J_wheel_rear: 3.562  # Rear wheel inertia [kg*m^2]
+    B_wheel_front: 1.0  # Front wheel viscous damping [N*m*s/rad] 0.34
+    B_wheel_rear: 1.0  # Rear wheel viscous damping [N*m*s/rad]
+
+  # Vehicle geometry in the body frame.
+  geometry:
+    L_track: 1.634  # Track width [m]
+    L_wheelbase: 2.97  # Wheelbase [m]
+
+    # Static sprung-mass load split by axle.
+    front_load_ratio: 0.611  # Front axle load ratio [-]
+    rear_load_ratio: 0.389  # Rear axle load ratio [-]
+
+    axle_offsets: # Steer-by-Wire 차량, 전후륜 등가
+      F: 
+        x: 1.155
+        y: 0.0
+      R:
+        x: -1.815
+        y: 0.0
+    lf: 1.155
+    lr: 1.815
+
+# ========================================
+# Actuator Parameters
+# ========================================
+
+brake:
+  # First-order brake clamp force actuator.
+  tau: 0.1  # Time constant [s]
+  mu_pad: 0.35  # Pad-disc friction coefficient [-]
+  V_d: 1.0e-7  # Pump displacement [m^3/rev]
+  R_rotor: 0.12  # Effective rotor radius [m]
+  A_eff: 0.0012566  # Effective caliper piston area [m^2]
+  p_max_bar: 200  # Maximum system pressure [bar]
+
+drive:
+  max_wheel_speed: 110.0  # Wheel speed limit [rad/s] 60.64
+
+
+steering:
+  J_cq: 0.1476
+  B_cq: 171.22
+  gear_ratio: 118.0  # Motor-shaft to steering-axis torque ratio [-]
+  steering_ratio: 17.21  # Steering-wheel to road-wheel angle ratio [-]
+  max_rate: 1.046  # Steering rate limit [rad/s], 현대차 데이터 1.046
+  efficiency: 1.0  # Steering system efficiency [-]
+
+  front:
+    max_angle_pos: 1.047198
+    max_angle_neg: -1.710422
+
+
+# ========================================
+# Tire Parameters
+# ========================================
+tire:
+  mu: 1.0  # Shared friction coefficient [-]
+
+  longitudinal:
+    C_x: 500000  # Longitudinal tire stiffness coefficient 231500
+    v_min: 0.1  # Minimum speed for slip-ratio calculation [m/s]
+
+  lateral:
+    C_alpha: 230000  # Cornering stiffness [N/rad] 230000
+    trail: 0.02635  # Pneumatic trail [m]
+    relaxation_length: 0.7 # relaxation length [m]  # 안씀  
+    vx_epsilon: 0.1 # m/s
+
+physics:
+  g: 9.81  # Gravity [m/s^2]
+
+vehicle_body:
+  m: 1500.0
+  inertia:
+    Izz: 2900.3
+  longitudinal:
+    rolling_resistance_coeff: 0.012
+    aero_drag_area: 0.75
+    air_density: 1.225
+    coast_drag_base_decel: 0.2
+    coast_drag_speed_gain: 0.020 #0.0133
+    coast_drag_drive_torque_threshold: 260.0
+    coast_drag_ramp_tau_s: 0.20
+    road_load_speed_epsilon: 0.10
